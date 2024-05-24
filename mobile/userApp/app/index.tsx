@@ -1,15 +1,17 @@
 import React from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 
 const LandingPage = () => {
+  const router = useRouter();
   return (
     <View style={styles.container}>
       <Image source={{ uri: 'your_logo_url_here' }} style={styles.logo} />
       <Text style={styles.welcomeText}>Welcome to EventSphere</Text>
       <Text style={styles.blurb}>Little Blurb Here</Text>
       
-      <TouchableOpacity style={styles.continueButton}>
+      <TouchableOpacity style={styles.continueButton} onPress={() => router.push('/eventList')}>
         <Text style={styles.continueButtonText}>Continue to Event List</Text>
       </TouchableOpacity>
       
