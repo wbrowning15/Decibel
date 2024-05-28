@@ -1,7 +1,9 @@
 import React from 'react';
-import { StyleSheet, Text, View, Image, ScrollView, FlatList, ImageSourcePropType } from 'react-native';
+import { StyleSheet, Text, View, Image, ScrollView, FlatList, ImageSourcePropType, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import { useNavigation } from '@react-navigation/native';
+import { FontAwesome } from '@expo/vector-icons';
 
 type Friend = {
   id: string;
@@ -18,10 +20,14 @@ const friends: Friend[] = [
 
 const ProfileScreen = () => {
     const router = useRouter();
+    const navigation = useNavigation();
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.header}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+            <FontAwesome name="arrow-left" size={24} color="black" />
+          </TouchableOpacity>
           <Image source={require('../assets/images/userAvatar.png')} style={styles.profilePic} />
           <Text style={styles.username}>Username: johndoe</Text>
         </View>
@@ -129,6 +135,12 @@ const styles = StyleSheet.create({
   },
   friendName: {
     fontSize: 16,
+  },
+  backButton: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    padding: 16,
   },
 });
 
