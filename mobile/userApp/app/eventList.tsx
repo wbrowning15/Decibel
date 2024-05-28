@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity, FlatList, ImageSourcePropType } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
 
 type Event = {
     id: string;
@@ -70,6 +71,7 @@ const EventListScreen = () => {
   const [selectedTab, setSelectedTab] = useState<'mine' | 'all'>('mine');
 
   const filteredEvents = events.filter(event => event.status === selectedTab);
+  const router = useRouter();
 
   return (
     <SafeAreaView style={styles.container}>
@@ -87,7 +89,9 @@ const EventListScreen = () => {
             </TouchableOpacity>
           </View>
         </View>
-        <FontAwesome name="user-circle" size={24} color="black" />
+        <TouchableOpacity onPress={() => router.push('/profile')}>
+          <FontAwesome name="user-circle" size={24} color="black" />
+        </TouchableOpacity>
       </View>
       <FlatList
         data={filteredEvents}
