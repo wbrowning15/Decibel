@@ -9,7 +9,7 @@ const LandingPage = () => {
   return (
     <SafeAreaProvider>
       <View style={styles.container}>
-        <Image source={{ uri: '../assets/images/freePalestine.png' }} style={styles.logo} />
+        <Image source={require('../assets/images/logo_sample.png')} style={styles.logo} />
         <Text style={styles.welcomeText}>Welcome to EventSphere</Text>
         <Text style={styles.blurb}>Little Blurb Here</Text>
         
@@ -42,9 +42,9 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   logo: {
-    width: 100,
-    height: 100,
-    marginBottom: 20,
+    width: 218.65,
+    height: 220.93,
+    marginBottom: 40,
   },
   welcomeText: {
     fontSize: 24,
