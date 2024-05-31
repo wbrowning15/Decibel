@@ -49,6 +49,7 @@ type EventCardProps = {
   };
 
 const EventCard: React.FC<EventCardProps> = ({ event }) => {
+  const router = useRouter();
     return (
       <View style={styles.card}>
         <Image source={event.image} style={styles.cardImage} />
@@ -58,7 +59,7 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
               <Text style={styles.eventTitle}>{event.title}</Text>
               <Text style={styles.eventDate}>{event.date}</Text>
             </View>
-            <TouchableOpacity style={styles.viewButton}>
+            <TouchableOpacity onPress={() => router.push('/map')} style={styles.viewButton} >
               <Text style={styles.viewButtonText}>View</Text>
             </TouchableOpacity>
           </View>
