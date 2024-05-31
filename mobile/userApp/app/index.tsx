@@ -11,7 +11,7 @@ const LandingPage = () => {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
         <View style={styles.container}>
-          <Image source={{ uri: '../assets/images/logo_sample.png' }} style={styles.logo} />
+          <Image source={require('../assets/images/logo_sample.png')} style={styles.logo} />
           <Text style={styles.welcomeText}>Welcome to EventSphere</Text>
           <Text style={styles.blurb}>Little Blurb Here</Text>
           
