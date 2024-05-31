@@ -6,7 +6,7 @@ import { Stack } from "expo-router";
 
 const loadFonts  = async() => {
   await Font.loadAsync({
-    'Montserrat' : require('../assets/fonts/Montserrat-VariableFont_wght.ttf'),
+    'Figtree-Regular' : require('../assets/fonts/Figtree-Regular.ttf')
   });
 };
 
