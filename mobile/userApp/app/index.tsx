@@ -59,31 +59,38 @@ const styles = StyleSheet.create({
     fontFamily: 'Figtree-Regular'
   },
   continueButton: {
-    backgroundColor: '#800080',
-    paddingVertical: 15,
-    paddingHorizontal: 60,
-    borderRadius: 5,
+    width: 345,
+    height: 56,
+    backgroundColor: '#511644',
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+    borderRadius: 12,
     marginBottom: 20,
+    alignItems: 'center',
+    justifyContent: 'center'
   },
   continueButtonText: {
     color: '#fff',
     fontSize: 16,
+    fontFamily: 'Figtree-Regular'
   },
   signInButton: {
+    width: 345,
+    height: 56,
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
     borderColor: '#ccc',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
-    marginBottom: 10,
-    width: '80%',
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    marginBottom: 20,
     justifyContent: 'center',
   },
   signInButtonText: {
     fontSize: 16,
     marginLeft: 10,
+    fontFamily: 'Figtree-Regular'
   },
   signUpText: {
     marginTop: 20,
