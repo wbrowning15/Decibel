@@ -48,13 +48,15 @@ const styles = StyleSheet.create({
   },
   welcomeText: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: 'regular',
     marginBottom: 10,
+    fontFamily: 'Figtree-Regular'
   },
   blurb: {
     fontSize: 16,
     color: 'gray',
     marginBottom: 30,
+    fontFamily: 'Figtree-Regular'
   },
   continueButton: {
     backgroundColor: '#800080',
