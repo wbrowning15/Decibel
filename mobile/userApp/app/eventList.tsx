@@ -1,16 +1,17 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity, FlatList, ImageSourcePropType } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 
 type Event = {
-    id: string;
-    title: string;
-    date: string;
-    image: ImageSourcePropType;
-    status: 'mine' | 'all'; //only 2 types of status
-  };
+  id: string;
+  title: string;
+  date: string;
+  image: ImageSourcePropType;
+  map: ImageSourcePropType;
+  status: 'mine' | 'all'; // only 2 types of status
+};
 
 const events: Event[] = [
   {
@@ -18,6 +19,7 @@ const events: Event[] = [
     title: 'Coachella',
     date: 'Apr 11 - Apr 20',
     image: require('../assets/images/coachellaSample.png'),
+    map: require('../assets/images/coachellaMap.png'),
     status: 'mine',
   },
   {
@@ -25,6 +27,7 @@ const events: Event[] = [
     title: 'Rolling Loud - California',
     date: 'May 10 - May 12',
     image: require('../assets/images/RLSample.png'),
+    map: require('../assets/images/RLmap.png'),
     status: 'mine',
   },
   {
@@ -32,6 +35,7 @@ const events: Event[] = [
     title: "Wallace's lit house party",
     date: 'June 15',
     image: require('../assets/images/housePartySample.png'),
+    map: require('../assets/images/RLmap.png'),
     status: 'mine',
   },
   {
@@ -39,33 +43,51 @@ const events: Event[] = [
     title: 'USC vs UCLA',
     date: 'August 69',
     image: require('../assets/images/footballSample.png'),
+    map: require('../assets/images/RLmap.png'),
     status: 'all',
   },
   // Add more events here
 ];
 
 type EventCardProps = {
-    event: Event;
-  };
+  event: Event;
+};
 
 const EventCard: React.FC<EventCardProps> = ({ event }) => {
   const router = useRouter();
-    return (
-      <View style={styles.card}>
-        <Image source={event.image} style={styles.cardImage} />
-        <View style={styles.cardContent}>
-          <View style={styles.textContainer}>
-            <View style={styles.textWrapper}>
-              <Text style={styles.eventTitle}>{event.title}</Text>
-              <Text style={styles.eventDate}>{event.date}</Text>
-            </View>
-            <TouchableOpacity onPress={() => router.push('/map')} style={styles.viewButton} >
-              <Text style={styles.viewButtonText}>View</Text>
-            </TouchableOpacity>
+
+  const handleViewPress = () => {
+    const eventStr = JSON.stringify(event);
+    console.log('Navigating to map with event:', event);
+    if (event.status === 'mine') {
+      router.push({
+        pathname: '/map',
+        params: { event: eventStr },
+      });
+    } else {
+      router.push({
+        pathname: '/eventDetails',
+        params: { event: eventStr },
+      });
+    }
+  };
+
+  return (
+    <View style={styles.card}>
+      <Image source={event.image} style={styles.cardImage} />
+      <View style={styles.cardContent}>
+        <View style={styles.textContainer}>
+          <View style={styles.textWrapper}>
+            <Text style={styles.eventTitle}>{event.title}</Text>
+            <Text style={styles.eventDate}>{event.date}</Text>
           </View>
+          <TouchableOpacity onPress={handleViewPress} style={styles.viewButton}>
+            <Text style={styles.viewButtonText}>View</Text>
+          </TouchableOpacity>
         </View>
       </View>
-    );
+    </View>
+  );
 };
 
 const EventListScreen = () => {

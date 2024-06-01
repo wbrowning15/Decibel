@@ -1,8 +1,11 @@
 import React from 'react';
-import { StyleSheet, View, Image, Text, Dimensions, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Image, Text, Dimensions, TouchableOpacity, ImageSourcePropType } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { useNavigation } from '@react-navigation/native';
+import { useRoute, RouteProp } from '@react-navigation/native';
+import { FontAwesome } from '@expo/vector-icons';
 
 type POIType = 'restroom' | 'stage' | 'concessions';
 
@@ -15,16 +18,47 @@ interface POI {
   y: number; // Y coordinate on the map
 }
 
-const mapImage = require('../assets/images/RLMapSample.png'); // Adjust the path to your map image
+type Event = {
+  id: string;
+  title: string;
+  date: string;
+  image: ImageSourcePropType; 
+  map: ImageSourcePropType;
+  status: 'mine' | 'all';
+};
 
-const POIs: POI[] = [
-  { id: '1', name: 'Main Stage', description: 'Main stage where the headline acts perform', type: 'stage', x: 100, y: 200 },
-  { id: '2', name: 'Food Court', description: 'Various food stands and trucks', type: 'concessions', x: 300, y: 400 },
-  { id: '3', name: 'Restrooms', description: 'Public restrooms', type: 'restroom', x: 150, y: 600 },
-  // Add more POIs here
-];
+type RootStackParamList = {
+  Map: { event: string };
+  EventDetails: { event: string };
+};
+
+type MapScreenRouteProp = RouteProp<RootStackParamList, 'Map'>;
 
 const MapScreen = () => {
+  const route = useRoute<MapScreenRouteProp>();
+  const event = route.params?.event ? JSON.parse(route.params.event) : null;
+  const navigation = useNavigation();
+  
+
+  console.log('Received event:', event);
+
+  if (!event) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <Text>No event data available</Text>
+      </SafeAreaView>
+    );
+  }
+
+  const mapImage = event.map;
+
+  const POIs: POI[] = [
+    { id: '1', name: 'Main Stage', description: 'Main stage where the headline acts perform', type: 'stage', x: 100, y: 200 },
+    { id: '2', name: 'Food Court', description: 'Various food stands and trucks', type: 'concessions', x: 300, y: 400 },
+    { id: '3', name: 'Restrooms', description: 'Public restrooms', type: 'restroom', x: 150, y: 600 },
+    // Customize POIs based on the event
+  ];
+
   const scale = useSharedValue(1);
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
@@ -64,13 +98,19 @@ const MapScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <FontAwesome name="arrow-left" size={24} color="black" />
+      </TouchableOpacity>
+      <View> 
+        
+      </View>
       <GestureDetector gesture={Gesture.Simultaneous(pinchGesture, panGesture)}>
         <Animated.View style={[styles.mapContainer, animatedStyle]}>
           <Image source={mapImage} style={styles.map} resizeMode="contain" />
           <View style={styles.overlay}>
             {POIs.map((poi) => (
               <TouchableOpacity key={poi.id} onPress={() => handlePOIPress(poi)} style={[styles.poiContainer, { top: poi.y, left: poi.x }]}>
-                <View style={[styles.poi, poiStyles[poi.type]]} />
+                <View style={[styles.poi, poiStyles[poi.type] as any]} />
                 <Text style={styles.poiLabel}>{poi.name}</Text>
               </TouchableOpacity>
             ))}
@@ -105,6 +145,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+  },
+  backButton: {
+    position: 'absolute',
+    left: 20,
+    top: 40,
+    zIndex: 1,
+    padding: 10,
   },
   mapContainer: {
     flex: 1,
