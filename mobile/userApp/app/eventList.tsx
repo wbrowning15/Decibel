@@ -1,3 +1,4 @@
+// eventList.tsx
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity, FlatList, ImageSourcePropType } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
@@ -61,7 +62,7 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
     console.log('Navigating to map with event:', event);
     if (event.status === 'mine') {
       router.push({
-        pathname: '/map',
+        pathname: '/EventTabs',
         params: { event: eventStr },
       });
     } else {
@@ -215,3 +216,4 @@ const styles = StyleSheet.create({
 });
 
 export default EventListScreen;
+

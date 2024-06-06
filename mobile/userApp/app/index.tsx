@@ -2,14 +2,12 @@ import React from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const LandingPage = () => {
   const router = useRouter();
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaProvider>
+      <SafeAreaView>
         <View style={styles.container}>
           <Image source={require('../assets/images/logo_sample.png')} style={styles.logo} />
           <Text style={styles.welcomeText}>Welcome to EventSphere</Text>
@@ -31,8 +29,7 @@ const LandingPage = () => {
           
           <Text style={styles.signUpText}>Don't have an account? <Text style={styles.signUpLink}>Sign Up</Text></Text>
         </View>
-      </SafeAreaProvider>
-    </GestureHandlerRootView>
+      </SafeAreaView>
   );
 };
 

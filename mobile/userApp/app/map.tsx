@@ -22,7 +22,7 @@ type Event = {
   id: string;
   title: string;
   date: string;
-  image: ImageSourcePropType; 
+  image: ImageSourcePropType;
   map: ImageSourcePropType;
   status: 'mine' | 'all';
 };
@@ -38,7 +38,6 @@ const MapScreen = () => {
   const route = useRoute<MapScreenRouteProp>();
   const event = route.params?.event ? JSON.parse(route.params.event) : null;
   const navigation = useNavigation();
-  
 
   console.log('Received event:', event);
 
@@ -101,9 +100,6 @@ const MapScreen = () => {
       <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
         <FontAwesome name="arrow-left" size={24} color="black" />
       </TouchableOpacity>
-      <View> 
-        
-      </View>
       <GestureDetector gesture={Gesture.Simultaneous(pinchGesture, panGesture)}>
         <Animated.View style={[styles.mapContainer, animatedStyle]}>
           <Image source={mapImage} style={styles.map} resizeMode="contain" />

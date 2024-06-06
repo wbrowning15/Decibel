@@ -1,46 +1,30 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { ActivityIndicator, View } from 'react-native';
-import * as Font from 'expo-font';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { Stack } from "expo-router";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-const loadFonts  = async() => {
-  await Font.loadAsync({
-    'Figtree-Regular' : require('../assets/fonts/Figtree-Regular.ttf')
-  });
-};
+import EventListScreen from './eventList';
+import ProfileScreen from './profile';
+import LandingPage from './index';
+import TabNavigator from './tabNavigator';
+
+const Stack = createNativeStackNavigator();
 
 export default function RootLayout() {
-  const [fontsLoaded, setFontsLoaded] = useState(false);
-
-  useEffect(() => {
-    async function fetchFonts() {
-      await loadFonts();
-      setFontsLoaded(true);
-    }
-
-    fetchFonts();
-  }, []);
-
-  if (!fontsLoaded) {
-    return (
-      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-        <ActivityIndicator/>
-      </View>
-    )
-  }
-  
   return (
     <SafeAreaProvider>
       <GestureHandlerRootView style={{ flex: 1 }}>
-        <Stack>
-          <Stack.Screen name="index" options={{ headerShown: false }}/>
-          <Stack.Screen name="eventList" options={{ headerShown: false }}/>
-          <Stack.Screen name="profile" options={{ headerShown: false }}/>
-          <Stack.Screen name="map" options={{headerShown: false }} />
-        </Stack> 
+        <NavigationContainer>
+          <Stack.Navigator>
+            <Stack.Screen name="LandingPage" component={LandingPage} options={{ headerShown: false }} />
+            <Stack.Screen name="EventList" component={EventListScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="Profile" component={ProfileScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="MapTabs" component={TabNavigator} options={{ headerShown: false }} />
+          </Stack.Navigator>
+        </NavigationContainer>
       </GestureHandlerRootView>
-    </SafeAreaProvider> 
+    </SafeAreaProvider>
   );
 }

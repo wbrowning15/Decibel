@@ -1,7 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View, Image, ScrollView, FlatList, ImageSourcePropType, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
 import { useNavigation } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons';
 
@@ -19,7 +18,6 @@ const friends: Friend[] = [
 ];
 
 const ProfileScreen = () => {
-    const router = useRouter();
     const navigation = useNavigation();
   return (
     <SafeAreaView style={styles.container}>
