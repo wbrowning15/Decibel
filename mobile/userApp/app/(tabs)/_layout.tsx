@@ -1,8 +1,11 @@
+// (tabs)/_layout.tsx
 import React from 'react';
-import { Tabs } from 'expo-router';
+import { Tabs, useLocalSearchParams } from 'expo-router';
 import { FontAwesome } from '@expo/vector-icons';
 
 export default function EventLayout() {
+  const { event } = useLocalSearchParams();
+
   return (
     <Tabs>
       <Tabs.Screen
@@ -12,6 +15,7 @@ export default function EventLayout() {
             <FontAwesome name="map" color={color} size={size} />
           ),
         }}
+        initialParams={{ event }}
       />
       <Tabs.Screen
         name="attractions"
@@ -20,6 +24,7 @@ export default function EventLayout() {
             <FontAwesome name="star" color={color} size={size} />
           ),
         }}
+        initialParams={{ event }}
       />
       <Tabs.Screen
         name="chat"
@@ -28,6 +33,7 @@ export default function EventLayout() {
             <FontAwesome name="comments" color={color} size={size} />
           ),
         }}
+        initialParams={{ event }}
       />
     </Tabs>
   );

@@ -57,7 +57,7 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
 
   const handleViewPress = () => {
     const eventStr = JSON.stringify(event);
-    console.log('Navigating to tabs with event:', event);
+    console.log('Navigating to event tabs with event:', event);
     router.push({
       pathname: '/(tabs)/map',
       params: { event: eventStr },
