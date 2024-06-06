@@ -1,10 +1,10 @@
 import React from 'react';
-import { StyleSheet, View, Image, Text, Dimensions, TouchableOpacity, ImageSourcePropType } from 'react-native';
+import { StyleSheet, View, Image, Text, Dimensions, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
-import { useRoute, RouteProp } from '@react-navigation/native';
+import { useLocalSearchParams } from 'expo-router';
 import { FontAwesome } from '@expo/vector-icons';
 
 type POIType = 'restroom' | 'stage' | 'concessions';
@@ -22,26 +22,17 @@ type Event = {
   id: string;
   title: string;
   date: string;
-  image: ImageSourcePropType;
-  map: ImageSourcePropType;
+  image: any;
+  map: any;
   status: 'mine' | 'all';
 };
 
-type RootStackParamList = {
-  Map: { event: string };
-  EventDetails: { event: string };
-};
-
-type MapScreenRouteProp = RouteProp<RootStackParamList, 'Map'>;
-
 const MapScreen = () => {
-  const route = useRoute<MapScreenRouteProp>();
-  const event = route.params?.event ? JSON.parse(route.params.event) : null;
+  const { event } = useLocalSearchParams();
+  const eventParsed: Event = event ? JSON.parse(event as string) : null;
   const navigation = useNavigation();
 
-  console.log('Received event:', event);
-
-  if (!event) {
+  if (!eventParsed) {
     return (
       <SafeAreaView style={styles.container}>
         <Text>No event data available</Text>
@@ -49,13 +40,12 @@ const MapScreen = () => {
     );
   }
 
-  const mapImage = event.map;
+  const mapImage = eventParsed.map;
 
   const POIs: POI[] = [
     { id: '1', name: 'Main Stage', description: 'Main stage where the headline acts perform', type: 'stage', x: 100, y: 200 },
     { id: '2', name: 'Food Court', description: 'Various food stands and trucks', type: 'concessions', x: 300, y: 400 },
     { id: '3', name: 'Restrooms', description: 'Public restrooms', type: 'restroom', x: 150, y: 600 },
-    // Customize POIs based on the event
   ];
 
   const scale = useSharedValue(1);
@@ -91,7 +81,6 @@ const MapScreen = () => {
   });
 
   const handlePOIPress = (poi: POI) => {
-    // Handle POI press, show details
     alert(`${poi.name}\n${poi.description}`);
   };
 

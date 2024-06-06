@@ -1,4 +1,3 @@
-// eventList.tsx
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity, FlatList, ImageSourcePropType } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
@@ -11,7 +10,7 @@ type Event = {
   date: string;
   image: ImageSourcePropType;
   map: ImageSourcePropType;
-  status: 'mine' | 'all'; // only 2 types of status
+  status: 'mine' | 'all';
 };
 
 const events: Event[] = [
@@ -47,7 +46,6 @@ const events: Event[] = [
     map: require('../assets/images/RLmap.png'),
     status: 'all',
   },
-  // Add more events here
 ];
 
 type EventCardProps = {
@@ -59,18 +57,11 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
 
   const handleViewPress = () => {
     const eventStr = JSON.stringify(event);
-    console.log('Navigating to map with event:', event);
-    if (event.status === 'mine') {
-      router.push({
-        pathname: '/EventTabs',
-        params: { event: eventStr },
-      });
-    } else {
-      router.push({
-        pathname: '/eventDetails',
-        params: { event: eventStr },
-      });
-    }
+    console.log('Navigating to tabs with event:', event);
+    router.push({
+      pathname: '/(tabs)/map',
+      params: { event: eventStr },
+    });
   };
 
   return (
@@ -216,4 +207,3 @@ const styles = StyleSheet.create({
 });
 
 export default EventListScreen;
-
