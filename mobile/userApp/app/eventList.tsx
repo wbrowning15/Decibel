@@ -163,13 +163,15 @@ const styles = StyleSheet.create({
   tabText: {
     fontSize: 14,
     color: '#888',
+    fontFamily: 'Figtree-Regular'
   },
   activeTab: {
     backgroundColor: '#f0f0f0',
   },
   activeTabText: {
     color: '#000',
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    fontFamily: 'Figtree-bold'
   },
   eventList: {
     paddingBottom: 16,
@@ -192,32 +194,36 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
+    marginLeft: -14,
   },
   textWrapper: {
     flex: 1,
     marginRight: 10,
   },
   eventTitle: {
-    fontSize: 18,
+    fontSize: 15,
     fontWeight: 'bold',
     marginBottom: 4,
+    fontFamily: 'Figtree-Regular'
   },
   eventDate: {
     fontSize: 14,
     color: '#666',
     marginBottom: 4,
+    fontFamily: 'Figtree-regular'
   },
   viewButton: {
-    backgroundColor: '#800080',
+    backgroundColor: '#511644',
     paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingHorizontal: 40,
     borderRadius: 5,
+    marginRight: -14,
   },
   viewButtonText: {
     color: '#fff',
     fontSize: 14,
+    fontFamily: 'Figtree-Regular'
   },
   userIconContainer: {
     position: 'absolute',
