@@ -104,8 +104,8 @@ const EventListScreen = () => {
             </TouchableOpacity>
           </View>
         </View>
-        <TouchableOpacity onPress={() => router.push('/profile')}>
-          <FontAwesome name="user-circle" size={24} color="black" />
+        <TouchableOpacity onPress={() => router.push('/profile')} style={styles.userIconContainer}>
+          <FontAwesome name="user-circle" size={32} color="black" />
         </TouchableOpacity>
       </View>
       <FlatList
@@ -126,9 +126,10 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 0,
+    position: 'relative'
   },
   searchIcon: {
     position: 'absolute',
@@ -137,73 +138,89 @@ const styles = StyleSheet.create({
   tabsContainer: {
     flex: 1,
     alignItems: 'center',
+    justifyContent: 'center'
   },
   tabs: {
     flexDirection: 'row',
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 8,
+    backgroundColor: '#fff',
   },
   tab: {
     paddingVertical: 8,
     paddingHorizontal: 16,
-    borderRadius: 20,
-    backgroundColor: '#f0f0f0',
-    marginHorizontal: 4,
+    borderRadius: 8
   },
   tabText: {
     fontSize: 14,
     color: '#888',
+    fontFamily: 'Figtree-Regular'
   },
   activeTab: {
-    backgroundColor: '#800080',
+    backgroundColor: '#f0f0f0',
   },
   activeTabText: {
-    color: '#fff',
+    color: '#000',
+    fontWeight: 'bold',
+    fontFamily: 'Figtree-bold'
   },
   eventList: {
     paddingBottom: 16,
   },
   card: {
     backgroundColor: '#fff',
-    borderRadius: 8,
+    borderRadius: 10,
     overflow: 'hidden',
     marginBottom: 16,
     elevation: 2,
+    padding: 16
   },
   cardImage: {
     width: '100%',
-    height: 200,
+    height: 310,
+    borderRadius: 12
   },
   cardContent: {
     padding: 16,
   },
   textContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
+    marginLeft: -14,
   },
   textWrapper: {
     flex: 1,
     marginRight: 10,
   },
   eventTitle: {
-    fontSize: 18,
+    fontSize: 15,
     fontWeight: 'bold',
     marginBottom: 4,
+    fontFamily: 'Figtree-Regular'
   },
   eventDate: {
     fontSize: 14,
     color: '#666',
     marginBottom: 4,
+    fontFamily: 'Figtree-regular'
   },
   viewButton: {
-    backgroundColor: '#800080',
+    backgroundColor: '#511644',
     paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingHorizontal: 40,
     borderRadius: 5,
+    marginRight: -14,
   },
   viewButtonText: {
     color: '#fff',
     fontSize: 14,
+    fontFamily: 'Figtree-Regular'
   },
+  userIconContainer: {
+    position: 'absolute',
+    right: 16
+  }
 });
 
 export default EventListScreen;
