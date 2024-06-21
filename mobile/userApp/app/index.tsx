@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -26,8 +26,16 @@ const LandingPage = () => {
             <FontAwesome name="google" size={24} color="black" />
             <Text style={styles.signInButtonText}>Sign in with Google</Text>
           </TouchableOpacity>
+
+          <TouchableOpacity style={styles.signInButton} onPress={() => router.push('/signIn')}>
+            <FontAwesome name="envelope" size={24} color="black" />
+            <Text style={styles.signInButtonText}>Sign in with Email</Text>
+          </TouchableOpacity>
           
-          <Text style={styles.signUpText}>Don't have an account? <Text style={styles.signUpLink}>Sign Up</Text></Text>
+          <Text style={styles.signUpText}>
+            Don't have an account? 
+            <Text style={styles.signUpLink} onPress={() => router.push('/signUp')}> Sign Up</Text>
+          </Text>
         </View>
       </SafeAreaProvider>
   );
