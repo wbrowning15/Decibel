@@ -1,8 +1,11 @@
-import React from 'react';
-import { StyleSheet, Text, View, Image, ScrollView, FlatList, ImageSourcePropType, TouchableOpacity } from 'react-native';
+// ProfileScreen.js
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, Text, TextInput, View, Image, ScrollView, FlatList, ImageSourcePropType, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons';
+import { auth, db } from './firebaseConfig';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
 
 type Friend = {
   id: string;
@@ -18,7 +21,60 @@ const friends: Friend[] = [
 ];
 
 const ProfileScreen = () => {
-    const navigation = useNavigation();
+  const navigation = useNavigation();
+  const [userData, setUserData] = useState<any>(null);
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const user = auth.currentUser;
+      if (user) {
+        try {
+          console.log('Fetching user data for UID:', user.uid);
+          const docRef = doc(db, 'users', user.uid);
+          console.log('Document reference:', docRef.path);
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            console.log('User data:', data);
+            setUserData(data);
+            setUsername(data.username);
+            setEmail(data.email);
+          } else {
+            console.log('No such document!');
+          }
+        } catch (error) {
+          console.error('Error fetching user data:', error);
+        }
+      } else {
+        console.log('No authenticated user found');
+      }
+    };
+    fetchUserData();
+  }, []);
+
+  const handleUpdateUsername = async () => {
+    const user = auth.currentUser;
+    if (user) {
+      try {
+        const docRef = doc(db, 'users', user.uid);
+        await updateDoc(docRef, { username });
+        alert('Username updated!');
+      } catch (error) {
+        console.error('Error updating username:', error);
+      }
+    }
+  };
+
+  if (!userData) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <Text>Loading...</Text>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
@@ -27,11 +83,21 @@ const ProfileScreen = () => {
             <FontAwesome name="arrow-left" size={24} color="black" />
           </TouchableOpacity>
           <Image source={require('../assets/images/userAvatar.png')} style={styles.profilePic} />
-          <Text style={styles.username}>Username: johndoe</Text>
+          
+        </View>
+        <View style={styles.usernameContainer}>
+        <Text style={styles.label}>Username</Text>
+          <TextInput
+            style={styles.input}
+            value={username}
+            onChangeText={setUsername}
+          />
+          <TouchableOpacity style={styles.button} onPress={handleUpdateUsername}>
+            <Text style={styles.buttonText}>Update Username</Text>
+          </TouchableOpacity>
         </View>
         <View style={styles.infoContainer}>
-          <Text style={styles.infoText}>Email: johndoe@example.com</Text>
-          <Text style={styles.infoText}>Password: ••••••••</Text>
+          <Text style={styles.infoText}>Email: {email}</Text>
         </View>
         <View style={styles.statsContainer}>
           <View style={styles.stat}>
@@ -73,6 +139,10 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: 'center',
+    width: '100%', // Add this line to make sure header takes full width
+  },
+  usernameContainer: {
+    alignItems: 'center',
     marginBottom: 20,
   },
   profilePic: {
@@ -81,9 +151,28 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     marginBottom: 10,
   },
-  username: {
-    fontSize: 24,
-    fontWeight: 'bold',
+  label: {
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  input: {
+    height: 40,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    marginBottom: 20,
+    paddingHorizontal: 10,
+    width: '80%',
+  },
+  button: {
+    backgroundColor: '#511644',
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    width: '80%',
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
   },
   infoContainer: {
     width: '100%',
@@ -143,4 +232,3 @@ const styles = StyleSheet.create({
 });
 
 export default ProfileScreen;
-
