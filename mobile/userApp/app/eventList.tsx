@@ -1,58 +1,22 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity, FlatList, ImageSourcePropType } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, Image, TouchableOpacity, FlatList } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import { db } from './firebaseConfig';
+import { collection, getDocs, query, orderBy } from 'firebase/firestore';
+import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 
 type Event = {
   id: string;
   title: string;
-  date: string;
-  image: ImageSourcePropType;
-  map: ImageSourcePropType;
+  dateString: string;
+  image: string;
+  map: string;
   status: 'mine' | 'all';
 };
 
-const events: Event[] = [
-  {
-    id: '1',
-    title: 'Coachella',
-    date: 'Apr 11 - Apr 20',
-    image: require('../assets/images/coachellaSample.png'),
-    map: require('../assets/images/coachellaMap.png'),
-    status: 'mine',
-  },
-  {
-    id: '2',
-    title: 'Rolling Loud - California',
-    date: 'May 10 - May 12',
-    image: require('../assets/images/RLSample.png'),
-    map: require('../assets/images/RLmap.png'),
-    status: 'mine',
-  },
-  {
-    id: '3',
-    title: "Wallace's lit house party",
-    date: 'June 15',
-    image: require('../assets/images/housePartySample.png'),
-    map: require('../assets/images/RLmap.png'),
-    status: 'mine',
-  },
-  {
-    id: '4',
-    title: 'USC vs UCLA',
-    date: 'August 69',
-    image: require('../assets/images/footballSample.png'),
-    map: require('../assets/images/RLmap.png'),
-    status: 'all',
-  },
-];
-
-type EventCardProps = {
-  event: Event;
-};
-
-const EventCard: React.FC<EventCardProps> = ({ event }) => {
+const EventCard: React.FC<{ event: Event }> = ({ event }) => {
   const router = useRouter();
 
   const handleViewPress = () => {
@@ -66,12 +30,12 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
 
   return (
     <View style={styles.card}>
-      <Image source={event.image} style={styles.cardImage} />
+      <Image source={{ uri: event.image }} style={styles.cardImage} />
       <View style={styles.cardContent}>
         <View style={styles.textContainer}>
           <View style={styles.textWrapper}>
             <Text style={styles.eventTitle}>{event.title}</Text>
-            <Text style={styles.eventDate}>{event.date}</Text>
+            <Text style={styles.eventDate}>{event.dateString}</Text>
           </View>
           <TouchableOpacity onPress={handleViewPress} style={styles.viewButton}>
             <Text style={styles.viewButtonText}>View</Text>
@@ -82,11 +46,40 @@ const EventCard: React.FC<EventCardProps> = ({ event }) => {
   );
 };
 
-const EventListScreen = () => {
+const EventListScreen: React.FC = () => {
+  const [events, setEvents] = useState<Event[]>([]);
   const [selectedTab, setSelectedTab] = useState<'mine' | 'all'>('mine');
+  const router = useRouter();
+  const storage = getStorage();
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const eventsCollection = collection(db, 'events');
+        const q = query(eventsCollection, orderBy('id'));
+        const eventSnapshot = await getDocs(q);
+        const eventList = await Promise.all(
+          eventSnapshot.docs.map(async (doc) => {
+            const data = doc.data() as Event;
+            const imageRef = ref(storage, data.image);
+            const imageURL = await getDownloadURL(imageRef);
+            return {
+              ...data,
+              id: doc.id,
+              image: imageURL,
+            };
+          })
+        );
+        setEvents(eventList);
+      } catch (error) {
+        console.error('Error fetching events: ', error);
+      }
+    };
+
+    fetchEvents();
+  }, []);
 
   const filteredEvents = events.filter(event => event.status === selectedTab);
-  const router = useRouter();
 
   return (
     <SafeAreaView style={styles.container}>

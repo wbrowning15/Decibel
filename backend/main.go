@@ -5,13 +5,11 @@ import (
     "log"
     "net/http"
     "time"
-	"cloud.google.com/go/firestore"
 
+    "cloud.google.com/go/firestore"
     firebase "firebase.google.com/go"
     "github.com/gorilla/mux"
     "github.com/gorilla/websocket"
-    "github.com/jinzhu/gorm"
-    _ "github.com/jinzhu/gorm/dialects/sqlite"
     "google.golang.org/api/option"
 )
 
@@ -23,16 +21,16 @@ var upgrader = websocket.Upgrader{
     },
 }
 
-var db *gorm.DB
 var firebaseApp *firebase.App
 var firestoreClient *firestore.Client
+var clients = make(map[*websocket.Conn]bool)
+var broadcast = make(chan Message)
 
 type Message struct {
-    ID        uint      `gorm:"primary_key" json:"ID"`
-    UserID    string    `json:"UserID"`
-    Username  string    `json:"Username"`
-    Content   string    `json:"Content"`
-    Timestamp time.Time `json:"Timestamp"`
+    userID    string    `firestore:"userID"`
+    username  string    `firestore:"username"`
+    content   string    `firestore:"content"`
+    timestamp time.Time `firestore:"timestamp"`
 }
 
 func handleConnections(w http.ResponseWriter, r *http.Request) {
@@ -44,7 +42,9 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
     defer ws.Close()
 
     token := r.URL.Query().Get("token")
+    eventID := r.URL.Query().Get("eventID")
     log.Printf("Received token: %s\n", token)
+    log.Printf("Event ID: %s\n", eventID)
 
     ctx := context.Background()
     client, err := firebaseApp.Auth(ctx)
@@ -62,35 +62,46 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
     userID := decodedToken.UID
     log.Printf("Authenticated user ID: %s\n", userID)
 
+    clients[ws] = true
+
     for {
         var msg Message
         err := ws.ReadJSON(&msg)
         if err != nil {
             log.Printf("Error reading message: %v\n", err)
+            delete(clients, ws)
             break
         }
-		log.Printf("Received message: %+v\n", msg)
 
-        // Verify the user ID in the message matches the token user ID
-        if msg.UserID != userID {
-            log.Printf("User ID mismatch: token user ID %s, message user ID %s\n", userID, msg.UserID)
-			log.Printf("content: %s", msg.Content)
+        if msg.userID != userID {
+            log.Printf("User ID mismatch: token user ID %s, message user ID %s\n", userID, msg.userID)
             continue
         }
 
-        msg.Timestamp = time.Now()
+        msg.timestamp = time.Now()
 
-        log.Printf("Received message from %s: %s\n", msg.Username, msg.Content)
+        log.Printf("Received message from %s: %s\n", msg.username, msg.content)
 
-        if err := db.Create(&msg).Error; err != nil {
-            log.Printf("Error saving message to database: %v\n", err)
+        _, _, err = firestoreClient.Collection("events").Doc(eventID).Collection("messages").Add(ctx, msg)
+        if err != nil {
+            log.Printf("Error saving message to Firestore: %v\n", err)
             continue
         }
 
-        // Broadcast the message to all connected clients
-        if err := ws.WriteJSON(msg); err != nil {
-            log.Printf("Error broadcasting message: %v\n", err)
-            break
+        broadcast <- msg
+    }
+}
+
+func handleMessages() {
+    for {
+        msg := <-broadcast
+        for client := range clients {
+            err := client.WriteJSON(msg)
+            if err != nil {
+                log.Printf("Error broadcasting message: %v\n", err)
+                client.Close()
+                delete(clients, client)
+            }
         }
     }
 }
@@ -108,13 +119,15 @@ func main() {
     log.Println("Firebase initialized successfully")
 
     // Initialize Firestore
-    firestoreClient, err = firestore.NewClient(context.Background(), "YOUR_PROJECT_ID")
+    firestoreClient, err = firestore.NewClient(context.Background(), "aura-71a95", opt)
     if err != nil {
         log.Fatalf("Failed to create Firestore client: %v", err)
     }
     defer firestoreClient.Close()
 
     log.Println("Firestore initialized successfully")
+
+    go handleMessages()
 
     // Set up the router and WebSocket endpoint
     router := mux.NewRouter()
