@@ -27,10 +27,10 @@ var clients = make(map[*websocket.Conn]bool)
 var broadcast = make(chan Message)
 
 type Message struct {
-    userID    string    `firestore:"userID"`
-    username  string    `firestore:"username"`
-    content   string    `firestore:"content"`
-    timestamp time.Time `firestore:"timestamp"`
+    UserID    string    `json:"userID" firestore:"userID"`
+    Username  string    `json:"username" firestore:"username"`
+    Content   string    `json:"content" firestore:"content"`
+    Timestamp time.Time `json:"timestamp" firestore:"timestamp"`
 }
 
 func handleConnections(w http.ResponseWriter, r *http.Request) {
@@ -73,14 +73,14 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
             break
         }
 
-        if msg.userID != userID {
-            log.Printf("User ID mismatch: token user ID %s, message user ID %s\n", userID, msg.userID)
+        if msg.UserID != userID {
+            log.Printf("User ID mismatch: token user ID %s, message user ID %s\n", userID, msg.UserID)
             continue
         }
 
-        msg.timestamp = time.Now()
+        msg.Timestamp = time.Now()
 
-        log.Printf("Received message from %s: %s\n", msg.username, msg.content)
+        log.Printf("Received message from %s: %s\n", msg.Username, msg.Content)
 
         _, _, err = firestoreClient.Collection("events").Doc(eventID).Collection("messages").Add(ctx, msg)
         if err != nil {
