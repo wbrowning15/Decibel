@@ -7,7 +7,11 @@ export default function EventLayout() {
   const { event } = useLocalSearchParams();
 
   return (
-    <Tabs>
+    <Tabs
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
       <Tabs.Screen
         name="map"
         options={{
