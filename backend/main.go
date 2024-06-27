@@ -1,19 +1,16 @@
 package main
 
 import (
-	"context"
-	"log"
-	"net/http"
-	"time"
+    "context"
+    "log"
+    "net/http"
+    "time"
 
-	"cloud.google.com/go/firestore"
-
-	firebase "firebase.google.com/go"
-	"github.com/gorilla/mux"
-	"github.com/gorilla/websocket"
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/sqlite"
-	"google.golang.org/api/option"
+    "cloud.google.com/go/firestore"
+    firebase "firebase.google.com/go"
+    "github.com/gorilla/mux"
+    "github.com/gorilla/websocket"
+    "google.golang.org/api/option"
 )
 
 var upgrader = websocket.Upgrader{
@@ -24,16 +21,16 @@ var upgrader = websocket.Upgrader{
 	},
 }
 
-var db *gorm.DB
 var firebaseApp *firebase.App
 var firestoreClient *firestore.Client
+var clients = make(map[*websocket.Conn]bool)
+var broadcast = make(chan Message)
 
 type Message struct {
-	ID        uint      `gorm:"primary_key" json:"ID"`
-	UserID    string    `json:"UserID"`
-	Username  string    `json:"Username"`
-	Content   string    `json:"Content"`
-	Timestamp time.Time `json:"Timestamp"`
+    UserID    string    `json:"userID" firestore:"userID"`
+    Username  string    `json:"username" firestore:"username"`
+    Content   string    `json:"content" firestore:"content"`
+    Timestamp time.Time `json:"timestamp" firestore:"timestamp"`
 }
 
 func handleConnections(w http.ResponseWriter, r *http.Request) {
@@ -44,8 +41,10 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 	}
 	defer ws.Close()
 
-	token := r.URL.Query().Get("token")
-	log.Printf("Received token: %s\n", token)
+    token := r.URL.Query().Get("token")
+    eventID := r.URL.Query().Get("eventID")
+    log.Printf("Received token: %s\n", token)
+    log.Printf("Event ID: %s\n", eventID)
 
 	ctx := context.Background()
 	client, err := firebaseApp.Auth(ctx)
@@ -60,16 +59,18 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userID := decodedToken.UID
-	log.Printf("Authenticated user ID: %s\n", userID)
+    userID := decodedToken.UID
+    log.Printf("Authenticated user ID: %s\n", userID)
 
-	for {
-		var msg Message
-		err := ws.ReadJSON(&msg)
-		if err != nil {
-			log.Printf("Error reading message: %v\n", err)
-			break
-		}
+    clients[ws] = true
+
+    for {
+        var msg Message
+        err := ws.ReadJSON(&msg)
+        if err != nil {
+            log.Printf("Error reading message: %v\n", err)
+            break
+        }
 		log.Printf("Received message: %+v\n", msg)
 
 		// Verify the user ID in the message matches the token user ID
@@ -83,17 +84,18 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 
 		log.Printf("Received message from %s: %s\n", msg.Username, msg.Content)
 
-		if err := db.Create(&msg).Error; err != nil {
-			log.Printf("Error saving message to database: %v\n", err)
-			continue
-		}
+        _, _, err = firestoreClient.Collection("events").Doc(eventID).Collection("messages").Add(ctx, msg)
+        if err != nil {
+            log.Printf("Error saving message to Firestore: %v\n", err)
+            continue
+        }
 
-		// Broadcast the message to all connected clients
-		if err := ws.WriteJSON(msg); err != nil {
-			log.Printf("Error broadcasting message: %v\n", err)
-			break
-		}
-	}
+        // Broadcast the message to all connected clients
+        if err := ws.WriteJSON(msg); err != nil {
+            log.Printf("Error broadcasting message: %v\n", err)
+            break
+        }
+    }
 }
 
 func main() {
@@ -108,14 +110,16 @@ func main() {
 
 	log.Println("Firebase initialized successfully")
 
-	// Initialize Firestore
-	firestoreClient, err = firestore.NewClient(context.Background(), "aura-71a95", opt)
-	if err != nil {
-		log.Fatalf("Failed to create Firestore client: %v", err)
-	}
-	defer firestoreClient.Close()
+    // Initialize Firestore
+    firestoreClient, err = firestore.NewClient(context.Background(), "aura-71a95", opt)
+    if err != nil {
+        log.Fatalf("Failed to create Firestore client: %v", err)
+    }
+    defer firestoreClient.Close()
 
-	log.Println("Firestore initialized successfully")
+    log.Println("Firestore initialized successfully")
+
+    go handleMessages()
 
 	// Set up the router and WebSocket endpoint
 	router := mux.NewRouter()

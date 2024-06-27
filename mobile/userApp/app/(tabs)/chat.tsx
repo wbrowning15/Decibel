@@ -1,17 +1,38 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { View, Text, TextInput, Button, FlatList, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
-import { auth } from '../firebaseConfig';
+import { View, Text, TextInput, Button, FlatList, StyleSheet, KeyboardAvoidingView, Platform, SafeAreaView } from 'react-native';
+import { auth, db } from '../firebaseConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { collection, getDocs, query, orderBy } from 'firebase/firestore';
+import { useLocalSearchParams } from 'expo-router';
 
 interface Message {
-  ID: number;
-  UserID: string;
-  Username: string;
-  Content: string;
-  Timestamp: string;
+  userID: string;
+  username: string;
+  content: string;
+  timestamp: string;
 }
 
 const ChatScreen: React.FC = () => {
+  const { event } = useLocalSearchParams();
+  let eventObj = null;
+
+  try {
+    eventObj = JSON.parse(event as string);
+  } catch (error) {
+    console.error('Error parsing event JSON:', error);
+    // Handle error (e.g., show an error message to the user)
+  }
+
+  if (!eventObj) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <Text>Error: Invalid event data</Text>
+      </SafeAreaView>
+    );
+  }
+
+  const eventID = eventObj.id;
+
   const [messages, setMessages] = useState<Message[]>([]);
   const [message, setMessage] = useState<string>('');
   const [ws, setWs] = useState<WebSocket | null>(null);
@@ -26,10 +47,11 @@ const ChatScreen: React.FC = () => {
         console.log('Firebase ID Token:', token);
         const storedUsername = await AsyncStorage.getItem('username');
         setUsername(storedUsername);
-        const ws = new WebSocket(`ws://localhost:8080/ws?token=${token}`);
+        const ws = new WebSocket(`ws://localhost:8080/ws?token=${token}&eventID=${eventID}`);
 
         ws.onopen = () => {
           console.log('WebSocket connection established');
+          fetchMessages();
         };
 
         ws.onmessage = (event) => {
@@ -58,7 +80,23 @@ const ChatScreen: React.FC = () => {
     };
 
     initWebSocket();
-  }, []);
+  }, [eventID]);
+
+  const fetchMessages = async () => {
+    try {
+      console.log('Fetching messages for event ID:', eventID);
+      const messagesCollection = collection(db, 'events', eventID, 'messages');
+      const q = query(messagesCollection, orderBy('timestamp'));
+      const querySnapshot = await getDocs(q);
+      const fetchedMessages = querySnapshot.docs.map(doc => ({
+        ...doc.data()
+      })) as Message[];
+      console.log('Fetched messages:', fetchedMessages);
+      setMessages(fetchedMessages);
+    } catch (error) {
+      console.error('Error fetching messages: ', error);
+    }
+  };
 
   const sendMessage = useCallback(async () => {
     const userId = auth.currentUser?.uid;
@@ -81,8 +119,8 @@ const ChatScreen: React.FC = () => {
 
   const renderItem = useCallback(({ item }: { item: Message }) => (
     <View style={styles.messageContainer}>
-      <Text style={styles.username}>{item.Username}</Text>
-      <Text style={styles.message}>{item.Content}</Text>
+      <Text style={styles.username}>{item.username}</Text>
+      <Text style={styles.message}>{item.content}</Text>
     </View>
   ), []);
 
@@ -99,7 +137,7 @@ const ChatScreen: React.FC = () => {
       <FlatList
         ref={flatListRef}
         data={messages}
-        keyExtractor={(item) => item.ID.toString()}
+        keyExtractor={(_, index) => index.toString()}
         renderItem={renderItem}
         style={styles.messageList}
       />

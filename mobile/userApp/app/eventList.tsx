@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { db } from './firebaseConfig';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
+import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 
 type Event = {
   id: string;
@@ -49,6 +50,7 @@ const EventListScreen: React.FC = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [selectedTab, setSelectedTab] = useState<'mine' | 'all'>('mine');
   const router = useRouter();
+  const storage = getStorage();
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -56,10 +58,18 @@ const EventListScreen: React.FC = () => {
         const eventsCollection = collection(db, 'events');
         const q = query(eventsCollection, orderBy('id'));
         const eventSnapshot = await getDocs(q);
-        const eventList = eventSnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        })) as Event[];
+        const eventList = await Promise.all(
+          eventSnapshot.docs.map(async (doc) => {
+            const data = doc.data() as Event;
+            const imageRef = ref(storage, data.image);
+            const imageURL = await getDownloadURL(imageRef);
+            return {
+              ...data,
+              id: doc.id,
+              image: imageURL,
+            };
+          })
+        );
         setEvents(eventList);
       } catch (error) {
         console.error('Error fetching events: ', error);
