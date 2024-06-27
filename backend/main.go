@@ -119,7 +119,6 @@ func main() {
 
     log.Println("Firestore initialized successfully")
 
-    go handleMessages()
 
 	// Set up the router and WebSocket endpoint
 	router := mux.NewRouter()
