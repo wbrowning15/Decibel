@@ -6,6 +6,8 @@ import { useNavigation } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons';
 import { auth, db } from './firebaseConfig';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { signOut } from 'firebase/auth'
+import { useRouter } from 'expo-router'
 
 type Friend = {
   id: string;
@@ -22,6 +24,7 @@ const friends: Friend[] = [
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
+  const router = useRouter();
   const [userData, setUserData] = useState<any>(null);
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
@@ -67,6 +70,15 @@ const ProfileScreen = () => {
     }
   };
 
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth);
+      router.push('/'); // Assuming you have a login screen to navigate to
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
+
   if (!userData) {
     return (
       <SafeAreaView style={styles.container}>
@@ -83,10 +95,9 @@ const ProfileScreen = () => {
             <FontAwesome name="arrow-left" size={24} color="black" />
           </TouchableOpacity>
           <Image source={require('../assets/images/userAvatar.png')} style={styles.profilePic} />
-          
         </View>
         <View style={styles.usernameContainer}>
-        <Text style={styles.label}>Username</Text>
+          <Text style={styles.label}>Username</Text>
           <TextInput
             style={styles.input}
             value={username}
@@ -123,6 +134,9 @@ const ProfileScreen = () => {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.friendsList}
         />
+        <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
+          <Text style={styles.buttonText}>Sign Out</Text>
+        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
@@ -228,6 +242,22 @@ const styles = StyleSheet.create({
     left: 0,
     top: 0,
     padding: 16,
+  },
+  signOutButton: {
+    backgroundColor: '#ff3b30',
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    width: '80%',
+    marginTop: 20,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
 });
 
