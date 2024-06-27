@@ -49,6 +49,7 @@ const SignUpPage = () => {
         uid: user.uid,
         email: user.email,
         username: finalUsername,
+        registered: true,
       });
       console.log('Signed up:', user);
       router.push('/signIn');

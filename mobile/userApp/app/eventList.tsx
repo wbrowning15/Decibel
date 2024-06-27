@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, Image, TouchableOpacity, FlatList } from 'react
 import { FontAwesome } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { db } from './firebaseConfig';
+import { db, auth } from './firebaseConfig';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 
@@ -51,6 +51,14 @@ const EventListScreen: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState<'mine' | 'all'>('mine');
   const router = useRouter();
   const storage = getStorage();
+
+  if (!auth.currentUser) {
+    return (
+      <View style={styles.centeredContainer}>
+        <Text style={styles.signInText}>Sign in to use chat!</Text>
+      </View>
+    );
+  }
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -213,7 +221,17 @@ const styles = StyleSheet.create({
   userIconContainer: {
     position: 'absolute',
     right: 16
-  }
+  },
+  centeredContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f5f5f5',
+  },
+  signInText: {
+    fontSize: 18,
+    color: '#333',
+  },
 });
 
 export default EventListScreen;
