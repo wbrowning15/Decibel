@@ -1,4 +1,3 @@
-// ProfileScreen.js
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, TextInput, View, Image, ScrollView, FlatList, ImageSourcePropType, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -6,8 +5,8 @@ import { useNavigation } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons';
 import { auth, db } from './firebaseConfig';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
-import { signOut } from 'firebase/auth'
-import { useRouter } from 'expo-router'
+import { signOut } from 'firebase/auth';
+import { useRouter } from 'expo-router';
 
 type Friend = {
   id: string;
@@ -22,17 +21,19 @@ const friends: Friend[] = [
   // Add more friends here
 ];
 
-const ProfileScreen = () => {
+const ProfileScreen: React.FC = () => {
   const navigation = useNavigation();
   const router = useRouter();
   const [userData, setUserData] = useState<any>(null);
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
+  const [isAnonymous, setIsAnonymous] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
       const user = auth.currentUser;
       if (user) {
+        setIsAnonymous(user.isAnonymous); // Check if the user is anonymous
         try {
           console.log('Fetching user data for UID:', user.uid);
           const docRef = doc(db, 'users', user.uid);
@@ -69,6 +70,15 @@ const ProfileScreen = () => {
       }
     }
   };
+  const handleRegister = async() => {
+    const user = auth.currentUser;//should be anonymous
+    try {
+      await signOut(auth);
+      router.push('/signUp');
+    }catch (error){
+      console.error('Error registering w/email & pass:', error);
+    }
+  }
 
   const handleSignOut = async () => {
     try {
@@ -134,9 +144,16 @@ const ProfileScreen = () => {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.friendsList}
         />
-        <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
-          <Text style={styles.buttonText}>Sign Out</Text>
+        {!isAnonymous && (
+          <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
+            <Text style={styles.buttonText}>Sign Out</Text>
+          </TouchableOpacity>
+        )}
+        {isAnonymous && (
+          <TouchableOpacity style={styles.signOutButton} onPress={handleRegister}>
+          <Text style={styles.buttonText}>Register w/ email</Text>
         </TouchableOpacity>
+        )}
       </ScrollView>
     </SafeAreaView>
   );

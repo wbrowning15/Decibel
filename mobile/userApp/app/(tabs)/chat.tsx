@@ -1,15 +1,16 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { View, Text, TextInput, Button, FlatList, StyleSheet, KeyboardAvoidingView, Platform, SafeAreaView } from 'react-native';
+import { View, Text, TextInput, FlatList, StyleSheet, KeyboardAvoidingView, Platform, SafeAreaView, TouchableOpacity, Image } from 'react-native';
 import { auth, db } from '../firebaseConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { useLocalSearchParams } from 'expo-router';
+import { FontAwesome } from '@expo/vector-icons';
 
 interface Message {
   userID: string;
   username: string;
   content: string;
-  timestamp: string;
+  timestamp: any;
 }
 
 const ChatScreen: React.FC = () => {
@@ -20,7 +21,6 @@ const ChatScreen: React.FC = () => {
     eventObj = JSON.parse(event as string);
   } catch (error) {
     console.error('Error parsing event JSON:', error);
-    // Handle error (e.g., show an error message to the user)
   }
 
   if (!eventObj) {
@@ -32,7 +32,6 @@ const ChatScreen: React.FC = () => {
   }
 
   const eventID = eventObj.id;
-
   const [messages, setMessages] = useState<Message[]>([]);
   const [message, setMessage] = useState<string>('');
   const [ws, setWs] = useState<WebSocket | null>(null);
@@ -88,13 +87,17 @@ const ChatScreen: React.FC = () => {
       const messagesCollection = collection(db, 'events', eventID, 'messages');
       const q = query(messagesCollection, orderBy('timestamp'));
       const querySnapshot = await getDocs(q);
-      const fetchedMessages = querySnapshot.docs.map(doc => ({
-        ...doc.data()
-      })) as Message[];
+      const fetchedMessages = querySnapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+          ...data,
+          timestamp: data.timestamp.toDate ? data.timestamp.toDate().toISOString() : data.timestamp
+        } as Message;
+      });
       console.log('Fetched messages:', fetchedMessages);
       setMessages(fetchedMessages);
     } catch (error) {
-      console.error('Error fetching messages: ', error);
+      console.error('Error fetching messages:', error);
     }
   };
 
@@ -103,10 +106,10 @@ const ChatScreen: React.FC = () => {
     const storedUsername = await AsyncStorage.getItem('username');
     if (message.trim() && ws && storedUsername && userId) {
       const msg = {
-        UserID: userId,
-        Username: storedUsername,
-        Content: message,
-        Timestamp: new Date().toISOString(),
+        userID: userId,
+        username: storedUsername,
+        content: message,
+        timestamp: new Date().toISOString(),
       };
       console.log('Sending message:', JSON.stringify(msg));
       ws.send(JSON.stringify(msg));
@@ -117,20 +120,19 @@ const ChatScreen: React.FC = () => {
     }
   }, [message, ws, username]);
 
-  const renderItem = useCallback(({ item }: { item: Message }) => (
-    <View style={styles.messageContainer}>
-      <Text style={styles.username}>{item.username}</Text>
-      <Text style={styles.message}>{item.content}</Text>
-    </View>
-  ), []);
-
-  if (!auth.currentUser) {
+  const renderItem = useCallback(({ item }: { item: Message }) => {
+    const date = new Date(item.timestamp);
     return (
-      <View style={styles.centeredContainer}>
-        <Text style={styles.signInText}>Sign in to use chat!</Text>
+      <View style={[styles.messageContainer, item.userID === auth.currentUser?.uid ? styles.sentMessage : styles.receivedMessage]}>
+        <View style={styles.messageHeader}>
+          <Image source={{ uri: 'https://via.placeholder.com/40' }} style={styles.avatar} />
+          <Text style={styles.username}>{item.username}</Text>
+        </View>
+        <Text style={styles.message}>{item.content}</Text>
+        <Text style={styles.timestamp}>{date.toLocaleTimeString()}</Text>
       </View>
     );
-  }
+  }, []);
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === "ios" ? "padding" : "height"}>
@@ -140,6 +142,7 @@ const ChatScreen: React.FC = () => {
         keyExtractor={(_, index) => index.toString()}
         renderItem={renderItem}
         style={styles.messageList}
+        contentContainerStyle={styles.messageListContent}
       />
       <View style={styles.inputContainer}>
         <TextInput
@@ -147,8 +150,11 @@ const ChatScreen: React.FC = () => {
           value={message}
           onChangeText={setMessage}
           placeholder="Type your message..."
+          placeholderTextColor="#1a1a1a"
         />
-        <Button title="Send" onPress={sendMessage} />
+        <TouchableOpacity style={styles.sendButton} onPress={sendMessage}>
+          <FontAwesome name="send" size={24} color="#fff" />
+        </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
   );
@@ -157,54 +163,84 @@ const ChatScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#c2b1f0',
   },
   centeredContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#1f1f1f',
   },
   signInText: {
     fontSize: 18,
-    color: '#333',
+    color: '#fff',
   },
   messageList: {
     flex: 1,
     padding: 10,
   },
+  messageListContent: {
+    flexGrow: 1,
+    justifyContent: 'flex-end',
+  },
   messageContainer: {
     padding: 10,
     marginVertical: 5,
-    borderRadius: 5,
-    backgroundColor: '#fff',
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 1 },
-    shadowRadius: 3,
+    borderRadius: 10,
+    maxWidth: '75%',
+    alignSelf: 'flex-start',
+  },
+  sentMessage: {
+    backgroundColor: '#4f72f1',
+    alignSelf: 'flex-end',
+  },
+  receivedMessage: {
+    backgroundColor: '#2a2a2a',
+  },
+  messageHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 5,
+  },
+  avatar: {
+    width: 20,
+    height: 20,
+    borderRadius: 20,
+    marginRight: 10,
   },
   username: {
     fontWeight: 'bold',
-    marginBottom: 5,
+    color: '#fff',
   },
   message: {
     fontSize: 16,
+    color: '#fff',
+  },
+  timestamp: {
+    fontSize: 12,
+    color: '#bbb',
+    alignSelf: 'flex-end',
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: 10,
-    borderTopWidth: 1,
-    borderTopColor: '#ccc',
-    backgroundColor: '#fff',
+    backgroundColor: '#c2b1f0',
   },
   input: {
     flex: 1,
     padding: 10,
     borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
+    borderColor: '#333',
+    borderRadius: 25,
+    color: '#000000',
     marginRight: 10,
+    backgroundColor: '#f5a4d5',
+  },
+  sendButton: {
+    backgroundColor: '#4f72f1',
+    padding: 10,
+    borderRadius: 25,
   },
 });
 

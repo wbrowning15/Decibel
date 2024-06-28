@@ -14,6 +14,7 @@ export default function EventLayout() {
           tabBarIcon: ({ color, size }) => (
             <FontAwesome name="map" color={color} size={size} />
           ),
+          headerShown: false
         }}
         initialParams={{ event }}
       />
@@ -23,6 +24,7 @@ export default function EventLayout() {
           tabBarIcon: ({ color, size }) => (
             <FontAwesome name="star" color={color} size={size} />
           ),
+          headerShown: false
         }}
         initialParams={{ event }}
       />
@@ -32,6 +34,7 @@ export default function EventLayout() {
           tabBarIcon: ({ color, size }) => (
             <FontAwesome name="comments" color={color} size={size} />
           ),
+          headerShown: false
         }}
         initialParams={{ event }}
       />
