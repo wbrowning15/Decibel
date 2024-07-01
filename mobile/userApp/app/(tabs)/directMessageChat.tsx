@@ -1,9 +1,10 @@
+// DirectMessageChat.tsx
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { View, Text, TextInput, Button, FlatList, StyleSheet, KeyboardAvoidingView, Platform, SafeAreaView } from 'react-native';
 import { auth, db } from '../firebaseConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
-import { useLocalSearchParams } from 'expo-router';
+import { useRoute } from '@react-navigation/native';
 
 interface Message {
   userID: string;
@@ -12,26 +13,9 @@ interface Message {
   timestamp: string;
 }
 
-const ChatScreen: React.FC = () => {
-  const { event } = useLocalSearchParams();
-  let eventObj = null;
-
-  try {
-    eventObj = JSON.parse(event as string);
-  } catch (error) {
-    console.error('Error parsing event JSON:', error);
-    // Handle error (e.g., show an error message to the user)
-  }
-
-  if (!eventObj) {
-    return (
-      <SafeAreaView style={styles.container}>
-        <Text>Error: Invalid event data</Text>
-      </SafeAreaView>
-    );
-  }
-
-  const eventID = eventObj.id;
+const DirectMessageChat: React.FC = () => {
+  const route = useRoute();
+  const { chatroomId, otherUserName } = route.params as { chatroomId: string, otherUserName: string };
 
   const [messages, setMessages] = useState<Message[]>([]);
   const [message, setMessage] = useState<string>('');
@@ -47,7 +31,7 @@ const ChatScreen: React.FC = () => {
         console.log('Firebase ID Token:', token);
         const storedUsername = await AsyncStorage.getItem('username');
         setUsername(storedUsername);
-        const ws = new WebSocket(`ws://localhost:8080/ws?token=${token}&eventID=${eventID}`);
+        const ws = new WebSocket(`ws://localhost:8080/ws?token=${token}&chatroomId=${chatroomId}`);
 
         ws.onopen = () => {
           console.log('WebSocket connection established');
@@ -80,12 +64,12 @@ const ChatScreen: React.FC = () => {
     };
 
     initWebSocket();
-  }, [eventID]);
+  }, [chatroomId]);
 
   const fetchMessages = async () => {
     try {
-      console.log('Fetching messages for event ID:', eventID);
-      const messagesCollection = collection(db, 'events', eventID, 'messages');
+      console.log('Fetching messages for chatroom ID:', chatroomId);
+      const messagesCollection = collection(db, 'chatrooms', chatroomId, 'messages');
       const q = query(messagesCollection, orderBy('timestamp'));
       const querySnapshot = await getDocs(q);
       const fetchedMessages = querySnapshot.docs.map(doc => ({
@@ -94,7 +78,7 @@ const ChatScreen: React.FC = () => {
       console.log('Fetched messages:', fetchedMessages);
       setMessages(fetchedMessages);
     } catch (error) {
-      console.error('Error fetching messages: ', error);
+      console.error('Error fetching messages:', error);
     }
   };
 
@@ -103,10 +87,10 @@ const ChatScreen: React.FC = () => {
     const storedUsername = await AsyncStorage.getItem('username');
     if (message.trim() && ws && storedUsername && userId) {
       const msg = {
-        UserID: userId,
-        Username: storedUsername,
-        Content: message,
-        Timestamp: new Date().toISOString(),
+        userID: userId,
+        username: storedUsername,
+        content: message,
+        timestamp: new Date().toISOString(),
       };
       console.log('Sending message:', JSON.stringify(msg));
       ws.send(JSON.stringify(msg));
@@ -134,6 +118,7 @@ const ChatScreen: React.FC = () => {
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === "ios" ? "padding" : "height"}>
+      <Text style={styles.otherUserName}>{otherUserName}</Text>
       <FlatList
         ref={flatListRef}
         data={messages}
@@ -190,6 +175,12 @@ const styles = StyleSheet.create({
   message: {
     fontSize: 16,
   },
+  otherUserName: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginVertical: 10,
+  },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -208,4 +199,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ChatScreen;
+export default DirectMessageChat;

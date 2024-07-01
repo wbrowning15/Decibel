@@ -27,14 +27,23 @@ export default function EventLayout() {
         initialParams={{ event }}
       />
       <Tabs.Screen
-        name="chat"
+        name="chatList"
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <FontAwesome name="star" color={color} size={size} />
+          ),
+        }}
+        initialParams={{ event }}
+      />
+      {/* <Tabs.Screen
+        name="generalChat"
         options={{
           tabBarIcon: ({ color, size }) => (
             <FontAwesome name="comments" color={color} size={size} />
           ),
         }}
         initialParams={{ event }}
-      />
+      /> */}
     </Tabs>
   );
 }
