@@ -14,6 +14,7 @@ type Event = {
   image: string;
   map: string;
   status: 'mine' | 'all';
+  chatroomId: string;
 };
 
 const EventCard: React.FC<{ event: Event }> = ({ event }) => {

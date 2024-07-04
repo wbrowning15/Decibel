@@ -15,6 +15,8 @@ interface Message {
 const GeneralChat: React.FC = () => {
   const route = useRoute();
   const { chatroomId } = route.params as { chatroomId: string };
+  console.log("ChatroomID: ", chatroomId);
+  console.log(route.params);
 
   const [messages, setMessages] = useState<Message[]>([]);
   const [message, setMessage] = useState<string>('');

@@ -43,10 +43,13 @@ const ChatList: React.FC = () => {
             const userData = userDoc.data();
             if (userData && userData.chatrooms) {
               const chatroomIds = userData.chatrooms as string[];
+              console.log("Chatroom ids here ", chatroomIds);
               const chatroomsData = await Promise.all(
                 chatroomIds.map(async (chatroomId) => {
+                  console.log("iterantion: ", chatroomId);
                   const chatroomDoc = await getDoc(doc(db, 'chatrooms', chatroomId));
                   if (chatroomDoc.exists()) {
+                    console.log("got here", chatroomId);
                     const chatroomData = chatroomDoc.data();
                     return {
                       chatroomId: chatroomId,
@@ -54,10 +57,13 @@ const ChatList: React.FC = () => {
                       name: chatroomData?.name || 'Unnamed',
                     };
                   }
+                  //if chatroom does not exist
                   return null;
                 })
               );
+              console.log("reached end");
               setChatrooms(chatroomsData.filter((chatroom): chatroom is Chatroom => chatroom !== null));
+              console.log(chatrooms);
             }
           }
         } catch (error) {
@@ -65,20 +71,20 @@ const ChatList: React.FC = () => {
         }
       }
     };
-
     fetchChatrooms();
   }, []);
 
   const navigateToChat = (chatroomId: string, chatroomType: string) => {
+    console.log("navigating id:", chatroomId);
     if (chatroomType === 'general') {
       router.push({
         pathname: '/generalChat',
-        params: { id: chatroomId },
+        params: { chatroomId: chatroomId },
       });
     } else if (chatroomType === 'direct') {
       router.push({
         pathname: '/directMessageChat',
-        params: { id: chatroomId },
+        params: { chatroomId: chatroomId },
       });
     } else if (chatroomType === 'group') {
       fetchGroupMembers(chatroomId).then((members) => {
