@@ -1,6 +1,6 @@
 
 <!-- ABOUT THE PROJECT -->
-## Decibel
+# Decibel
 
 [![Product Name Screen Shot][product-screenshot]](https://example.com)
 
