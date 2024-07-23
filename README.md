@@ -94,7 +94,7 @@ Here's a blank template to get started: To avoid retyping too much info. Do a se
 ### Built With
 
 * [![React Native][React-Native]][React-Native-url]
-* [![Vue][Vue.js]][Vue-url]
+* [![Expo][Expo-logo]][Expo-url]
 * [![Angular][Angular.io]][Angular-url]
 * [![Svelte][Svelte.dev]][Svelte-url]
 * [![Laravel][Laravel.com]][Laravel-url]
@@ -244,3 +244,5 @@ Project Link: [https://github.com/wbrowning15/aura](https://github.com/wbrowning
 [Bootstrap-url]: https://getbootstrap.com
 [JQuery.com]: https://img.shields.io/badge/jQuery-0769AD?style=for-the-badge&logo=jquery&logoColor=white
 [JQuery-url]: https://jquery.com 
+[Expo-url]: https://expo.dev/
+[Expo-logo]: https://img.shields.io/badge/Expo-black?style=for-the-badge&logo=expo
