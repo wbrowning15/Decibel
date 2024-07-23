@@ -95,9 +95,9 @@ Here's a blank template to get started: To avoid retyping too much info. Do a se
 
 * [![React Native][React-Native]][React-Native-url]
 * [![Expo][Expo-logo]][Expo-url]
-* [![Angular][Angular.io]][Angular-url]
-* [![Svelte][Svelte.dev]][Svelte-url]
-* [![Laravel][Laravel.com]][Laravel-url]
+* [![Firebase][Firebase-logo]][Firebase-url]
+* [![Typescript][Typescript-logo]][Typescript-url]
+* [![Go][Go-logo]][Go-url]
 * [![Bootstrap][Bootstrap.com]][Bootstrap-url]
 * [![JQuery][JQuery.com]][JQuery-url]
 
@@ -246,3 +246,9 @@ Project Link: [https://github.com/wbrowning15/aura](https://github.com/wbrowning
 [JQuery-url]: https://jquery.com 
 [Expo-url]: https://expo.dev/
 [Expo-logo]: https://img.shields.io/badge/Expo-black?style=for-the-badge&logo=expo
+[Firebase-url]: https://firebase.google.com/
+[Firebase-logo]: https://img.shields.io/badge/Firebase-red?style=for-the-badge&logo=firebase
+[Typescript-logo]: https://img.shields.io/badge/Typescript-grey?style=for-the-badge&logo=typescript
+[Typescript-url]: https://www.typescriptlang.org/
+[Go-logo]: https://img.shields.io/badge/Go-black?style=for-the-badge&logo=go
+[Go-url]: https://go.dev/
