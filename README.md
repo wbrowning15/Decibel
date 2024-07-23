@@ -230,7 +230,7 @@ Project Link: [https://github.com/wbrowning15/aura](https://github.com/wbrowning
 [product-screenshot]: images/screenshot.png
 [Next.js]: https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white
 [Next-url]: https://nextjs.org/
-[React-Native]: https://img.shields.io/badge/React_Native-blue?style=for-the-badge
+[React-Native]: https://img.shields.io/badge/React_Native-blue?style=for-the-badge&logo=react
 [React-Native-url]: https://reactnative.dev/
 [Vue.js]: https://img.shields.io/badge/Vue.js-35495E?style=for-the-badge&logo=vuedotjs&logoColor=4FC08D
 [Vue-url]: https://vuejs.org/
