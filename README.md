@@ -98,8 +98,6 @@ Here's a blank template to get started: To avoid retyping too much info. Do a se
 * [![Firebase][Firebase-logo]][Firebase-url]
 * [![Typescript][Typescript-logo]][Typescript-url]
 * [![Go][Go-logo]][Go-url]
-* [![Bootstrap][Bootstrap.com]][Bootstrap-url]
-* [![JQuery][JQuery.com]][JQuery-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
