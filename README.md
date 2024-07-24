@@ -8,7 +8,6 @@
 </div>
 
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ## About this Project
 
@@ -25,8 +24,6 @@
 Decibel is a revolutionary centralized application designed to transform the entertainment industry by streamlining the experience of attending events, music festivals, and amusement parks. Our app provides a suite of features tailored to enhance user engagement and convenience, including interactive maps to easily navigate event venues, real-time chat rooms for connecting with fellow attendees, and comprehensive event schedules to keep track of performances and activities. Whether you’re at a music festival, a large-scale event, or an amusement park, Decibel ensures you have all the information and tools you need right at your fingertips, making your experience more enjoyable and hassle-free.
 
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
 
 
 <!-- GETTING STARTED -->
@@ -37,12 +34,12 @@ To get a local copy up and running follow these simple example steps.
 
 ### Prerequisites
 
-This is an example of how to list things you need to use the software and how to install them.
-* npm
-  ```sh
-  npm install npm@latest -g
-  ```
-
+Make sure you have the folliwng installed:
+- ** Node.js and npm ** You can install Node.js and npm from [https://nodejs.org/](https://nodejs.org/)
+- ** Expo CLI ** Install Expo CLI globally
+```sh
+  npm install -g expo-cli
+```
 ### Installation
 
 1. Get a free API Key at [https://example.com](https://example.com)
