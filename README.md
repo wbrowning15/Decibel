@@ -34,26 +34,28 @@ To get a local copy up and running follow these simple example steps.
 
 ### Prerequisites
 
-Make sure you have the folliwng installed:
+Make sure you have the following installed:
 - ** Node.js and npm ** You can install Node.js and npm from [https://nodejs.org/](https://nodejs.org/)
 - ** Expo CLI ** Install Expo CLI globally
 ```sh
   npm install -g expo-cli
 ```
+- ** Xcode and iOS Simulator (for iOS development) ** You can install Xcode from the Mac App Store
+- ** Android Studio (for Android development) ** You can download Android Studio from https://developer.android.com/studio
+
 ### Installation
 
-1. Get a free API Key at [https://example.com](https://example.com)
-2. Clone the repo
+1. Clone the repo
    ```sh
-   git clone https://github.com/github_username/repo_name.git
+   git clone https://github.com/wbrowning15/aura.git
    ```
-3. Install NPM packages
+2. Install required dependencies tracked in package.json
    ```sh
    npm install
    ```
-4. Enter your API in `config.js`
-   ```js
-   const API_KEY = 'ENTER YOUR API';
+3. Run the project
+   ```sh
+   npx expo start
    ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
