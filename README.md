@@ -82,8 +82,21 @@ _For more examples, please refer to the [Documentation](https://example.com)_
     - [X] Set up authentication using anonymous Firebase authentication
 - [X] Create events landing page
     - [X] Stored events using Firebase storage
-- [ ] Feature 3
-    - [ ] Nested Feature
+- [ ] Develop the interactive map component for venue navigation
+    - [ ] Implement features for displaying event-specific locations and points of interest on the map
+    - [ ] Integrate map APIs using Mapbox
+    - [ ] Develop API endpoints for event-specific locations and POIs
+- [X] Develop chat room interfaces and integrate them with events
+    - [X] Set up real-time communication using Go for the server and Firestore for data storage
+    - [ ] Implement moderation and reporting features for chat rooms
+- [ ] Develop frontend compenent to display schedules dynamically
+    - [ ] Implement real-time updates for schedule changes
+    - [ ] Create backend API to manage event schedules
+- [ ] Implement notification preferences in user settings
+    - [ ] Develop background logic to trigger notifcations based on user preferences and event changes
+- [ ] Optimize database queries and data models for performance
+- [ ] Implement UI/UX improvements as needed
+
 
 See the [open issues](https://github.com/github_username/repo_name/issues) for a full list of proposed features (and known issues).
 
