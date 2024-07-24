@@ -22,6 +22,9 @@
 
 ### Description
 
+Decibel is a revolutionary centralized application designed to transform the entertainment industry by streamlining the experience of attending events, music festivals, and amusement parks. Our app provides a suite of features tailored to enhance user engagement and convenience, including interactive maps to easily navigate event venues, real-time chat rooms for connecting with fellow attendees, and comprehensive event schedules to keep track of performances and activities. Whether you’re at a music festival, a large-scale event, or an amusement park, Decibel ensures you have all the information and tools you need right at your fingertips, making your experience more enjoyable and hassle-free.
+
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
