@@ -82,6 +82,7 @@ Make sure you have the following installed:
 ## Contact
 
 Deepak Dalai - ddalai@asu.edu - https://www.linkedin.com/in/deepak-dalai-05b372250/
+
 Wallace Browning - wbrownin@usc.edu - https://www.linkedin.com/in/wallace-browning/
 
 Project Link: [https://github.com/wbrowning15/aura](https://github.com/wbrowning15/aura)
