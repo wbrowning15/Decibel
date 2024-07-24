@@ -10,7 +10,7 @@
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
+## About this Project
 
 ### Built With
 
@@ -19,6 +19,8 @@
 * [![Firebase][Firebase-logo]][Firebase-url]
 * [![Typescript][Typescript-logo]][Typescript-url]
 * [![Go][Go-logo]][Go-url]
+
+### Description
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
