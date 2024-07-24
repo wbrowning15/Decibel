@@ -77,8 +77,11 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 <!-- ROADMAP -->
 ## Roadmap
 
-- [ ] Feature 1
-- [ ] Feature 2
+- [X] Create user registration and login forms
+    - [X] Implement user registration and login functionality
+    - [X] Set up authentication using anonymous Firebase authentication
+- [X] Create events landing page
+    - [X] Stored events using Firebase storage
 - [ ] Feature 3
     - [ ] Nested Feature
 
