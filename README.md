@@ -2,9 +2,9 @@
 <!-- ABOUT THE PROJECT -->
 # Decibel
 
-<div style="text-align: center;">
-  <img src="imgs/home.png" alt="Image" height="600" style="display: inline-block;">
-  <img src="imgs/eventspage.png" alt="Image" height="600" style="display: inline-block;">
+<div style="display: flex; justify-content: center; gap: 20px;">
+  <img src="imgs/home.png" alt="Image" height="600">
+  <img src="imgs/eventspage.png" alt="Image" height="600">
 </div>
 
 
